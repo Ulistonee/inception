@@ -1,0 +1,13 @@
+docker ps                                                                           // show containers
+docker images                                                                       // show images
+docker run                                                                          // create container
+docker run --name mycontainer -it ubuntu bash                                       // launch container
+docker stop MyContainer                                                             // stop container
+docker top                                                                          // show top process
+docker kill MyContainer                                                             // destroy container
+docker exec                                                                         // connect to a running container
+docker rm                                                                           // delete container
+docker attach                                                                       // connect to a running container
+docker run -it -v "~/test_docker:/mnt" --name ubuntu /bin/bash                      // attach volume to a container
+docker run --name Nginx -p 8080:80 -d nginx                                         // bind a port
+docker network create -d bridge docker_network                                      // create network
