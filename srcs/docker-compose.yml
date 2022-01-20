@@ -1,15 +1,31 @@
 version: "3.9"  # optional since v1.27.0
 services:
-  web:
-    build: .
+  nginx:
+    container_name: nginx
+    build: ./requirements/nginx
     ports:
-      - "5000:5000"
+      - "443:443"
     volumes:
       - .:/code
       - logvolume01:/var/log
+    networks:
+      - inception
     links:
       - redis
   redis:
     image: redis
 volumes:
-  logvolume01: {}
+  db:
+    name: db
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/${USERNAME}/data/wp
+  wp:
+    name: wp
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/${USERNAME}/data/wp
