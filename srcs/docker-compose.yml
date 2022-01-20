@@ -6,14 +6,38 @@ services:
     ports:
       - "443:443"
     volumes:
-      - .:/code
-      - logvolume01:/var/log
+      - wp:/var/www/html/wordpress
     networks:
       - inception
-    links:
-      - redis
-  redis:
-    image: redis
+    depends_on:
+      - wordpress
+  mariadb:
+    container_name: mariadb
+    restart: always
+    build: ./requirements/mariadb
+    volumes:
+      - db:/var/lib/mysql
+    ports:
+      - "5121:3306"
+    networks:
+      - inception
+    environment:
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+
+  wordpress:
+    container_name: wordpress
+    build: ./requirements/wordpress
+    volumes:
+      - wp:/var/www/html/wordpress
+    ports:
+      - "5221:9000"
+    networks:
+      - inception
+    depends_on:
+      - mariadb
+
 volumes:
   db:
     name: db
@@ -21,7 +45,7 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: /home/${USERNAME}/data/wp
+      device: /home/${USERNAME}/data/db
   wp:
     name: wp
     driver: local
@@ -29,3 +53,6 @@ volumes:
       type: none
       o: bind
       device: /home/${USERNAME}/data/wp
+networks:
+  inception:
+    driver: bridge
