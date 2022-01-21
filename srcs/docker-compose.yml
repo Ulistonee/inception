@@ -5,54 +5,54 @@ services:
     build: ./requirements/nginx
     ports:
       - "443:443"
-    volumes:
-      - wp:/var/www/html/wordpress
+    #volumes:
+      #- wp:/var/www/html/wordpress
     networks:
       - inception
     depends_on:
       - wordpress
-  mariadb:
-    container_name: mariadb
-    restart: always
-    build: ./requirements/mariadb
-    volumes:
-      - db:/var/lib/mysql
-    ports:
-      - "5121:3306"
-    networks:
-      - inception
-    environment:
-      DB_NAME: ${DB_NAME}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
+  #mariadb:
+    #container_name: mariadb
+    #restart: always
+    #build: ./requirements/mariadb
+    #volumes:
+      #- db:/var/lib/mysql
+    #ports:
+      #- "5121:3306"
+    #networks:
+      #- inception
+    #environment:
+      #DB_NAME: ${DB_NAME}
+      #DB_USER: ${DB_USER}
+      #DB_PASSWORD: ${DB_PASSWORD}
 
   wordpress:
     container_name: wordpress
     build: ./requirements/wordpress
-    volumes:
-      - wp:/var/www/html/wordpress
+    #volumes:
+      #- wp:/var/www/html/wordpress
     ports:
       - "5221:9000"
     networks:
       - inception
-    depends_on:
-      - mariadb
+    #depends_on:
+      #- mariadb
 
-volumes:
-  db:
-    name: db
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: /home/${USERNAME}/data/db
-  wp:
-    name: wp
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: /home/${USERNAME}/data/wp
+#volumes:
+  #db:
+    #name: db
+    #driver: local
+    #driver_opts:
+      #type: none
+      #o: bind
+      #device: /Users/rchalmer/data/db
+  #wp:
+    #name: wp
+    #driver: local
+    #driver_opts:
+      #type: none
+      #o: bind
+      #device: /Users/rchalmer/data/wp
 networks:
   inception:
     driver: bridge
