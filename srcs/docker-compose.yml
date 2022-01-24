@@ -11,32 +11,36 @@ services:
       - inception
     depends_on:
       - wordpress
-  #mariadb:
-    #container_name: mariadb
-    #restart: always
-    #build: ./requirements/mariadb
+  mariadb:
+    container_name: mariadb
+    restart: always
+    build: ./requirements/mariadb
     #volumes:
       #- db:/var/lib/mysql
-    #ports:
-      #- "5121:3306"
-    #networks:
-      #- inception
-    #environment:
-      #DB_NAME: ${DB_NAME}
-      #DB_USER: ${DB_USER}
-      #DB_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5121:3306"
+    networks:
+      - inception
+    environment:
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
 
   wordpress:
     container_name: wordpress
+    image: wordpress:php7.4-fpm-alpine
+
+    #image: wordpress:latest
     build: ./requirements/wordpress
     #volumes:
       #- wp:/var/www/html/wordpress
+    restart: always
     ports:
       - "5221:9000"
     networks:
       - inception
-    #depends_on:
-      #- mariadb
+    depends_on:
+      - mariadb
 
 #volumes:
   #db:

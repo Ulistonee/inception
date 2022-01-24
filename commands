@@ -11,3 +11,4 @@ docker attach                                                                   
 docker run -it -v "~/test_docker:/mnt" --name ubuntu /bin/bash                      // attach volume to a container
 docker run --name Nginx -p 8080:80 -d nginx                                         // bind a port
 docker network create -d bridge docker_network                                      // create network
+docker-compose logs                                                                 // view logs
