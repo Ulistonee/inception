@@ -1,46 +1,52 @@
 version: "3.9"  # optional since v1.27.0
 services:
-  nginx:
-    container_name: nginx
-    build: ./requirements/nginx
-    ports:
-      - "443:443"
-    #volumes:
-      #- wp:/var/www/html/wordpress
-    networks:
-      - inception
-    depends_on:
-      - wordpress
   mariadb:
-    container_name: mariadb
-    restart: always
     build: ./requirements/mariadb
-    #volumes:
-      #- db:/var/lib/mysql
-    ports:
-      - "5121:3306"
-    networks:
-      - inception
+    container_name: mariadb
+    restart: unless-stopped
+    volumes:
+      - db:/var/lib/mysql
     environment:
       DB_NAME: ${DB_NAME}
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
-
-  wordpress:
-    container_name: wordpress
-    image: wordpress:php7.4-fpm-alpine
-
-    #image: wordpress:latest
-    build: ./requirements/wordpress
-    #volumes:
-      #- wp:/var/www/html/wordpress
-    restart: always
     ports:
-      - "5221:9000"
+      - "5121:3306"
     networks:
       - inception
+  wordpress:
     depends_on:
       - mariadb
+    #image: wordpress:latest
+
+    build: ./requirements/wordpress
+    container_name: wordpress
+    restart: unless-stopped
+#    volumes:
+#      - wp:/var/www/html/wordpress
+    ports:
+      - "8000:8000"
+    environment:
+      WORDPRESS_DB_HOST: ${DB_HOST}
+      WORDPRESS_DB_USER: ${DB_USER}
+      WORDPRESS_DB_PASSWORD: ${DB_PASSWORD}
+      WORDPRESS_DB_NAME: ${DB_NAME}
+    networks:
+      - inception
+  nginx:
+    depends_on:
+      - wordpress
+    build: ./requirements/nginx
+    container_name: nginx
+    restart: unless-stopped
+    ports:
+      - "443:443"
+      - "80:80"
+    volumes:
+      - wp:/var/www/html/wordpress
+    networks:
+      - inception
+
 
 #volumes:
   #db:
@@ -57,6 +63,9 @@ services:
       #type: none
       #o: bind
       #device: /Users/rchalmer/data/wp
+volumes:
+  db: {}
+  wp: {}
 networks:
   inception:
     driver: bridge

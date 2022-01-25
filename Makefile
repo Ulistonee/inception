@@ -1,19 +1,21 @@
 
-
 all:
 	#mkdir -p /Users/rchalmer/data/db
 	#mkdir -p /Users/rchalmer/data/wp
-	docker-compose -f srcs/docker-compose.yml build
-	docker-compose -f srcs/docker-compose.yml up -d
+	sudo docker-compose -f srcs/docker-compose.yml build
+	sudo docker-compose -f srcs/docker-compose.yml up -d
 
 
 up:
-	docker-compose -f srcs/docker-compose.yml up -d
+	sudo docker-compose -f srcs/docker-compose.yml up -d
 
 
 down:
-	docker-compose -f srcs/docker-compose.yml down
+	sudo docker-compose -f srcs/docker-compose.yml down
 
 
 ps:
-	docker-compose -f srcs/docker-compose.yml ps
+	sudo docker-compose -f srcs/docker-compose.yml ps
+
+logs:
+	sudo docker-compose -f srcs/docker-compose.yml logs wordpress
