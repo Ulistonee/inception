@@ -1,15 +1,19 @@
 version: "3.9"  # optional since v1.27.0
 services:
   mariadb:
-    build: ./requirements/mariadb
     container_name: mariadb
     restart: unless-stopped
+    build:
+      context: ./requirements/mariadb
+      dockerfile: Dockerfile
+      args:
+        DB_HOST: ${DB_HOST}
+        DB_USER: ${DB_USER}
+        DB_PASSWORD: ${DB_PASSWORD}
+        DB_NAME: ${DB_NAME}
+
     volumes:
       - db:/var/lib/mysql
-    environment:
-      DB_NAME: ${DB_NAME}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
     ports:
       - "5121:3306"
     networks:
@@ -17,20 +21,29 @@ services:
   wordpress:
     depends_on:
       - mariadb
-    #image: wordpress:latest
-
-    build: ./requirements/wordpress
+#    env_file:
+#      - .env
+    build:
+      context: ./requirements/wordpress
+      dockerfile: Dockerfile
+      args:
+        DB_HOST: ${DB_HOST}
+        DB_USER: ${DB_USER}
+        DB_PASSWORD: ${DB_PASSWORD}
+        DB_NAME: ${DB_NAME}
     container_name: wordpress
     restart: unless-stopped
-#    volumes:
-#      - wp:/var/www/html/wordpress
+    #    volumes:
+    #      - wp:/var/www/html/wordpress
+    volumes:
+      - wp:/var/www/html/wordpress
     ports:
       - "8000:8000"
-    environment:
-      WORDPRESS_DB_HOST: ${DB_HOST}
-      WORDPRESS_DB_USER: ${DB_USER}
-      WORDPRESS_DB_PASSWORD: ${DB_PASSWORD}
-      WORDPRESS_DB_NAME: ${DB_NAME}
+#    environment:
+#      DB_HOST: ${DB_HOST}
+#      DB_USER: ${DB_USER}
+#      DB_PASSWORD: ${DB_PASSWORD}
+#      DB_NAME: ${DB_NAME}
     networks:
       - inception
   nginx:
@@ -42,30 +55,38 @@ services:
     ports:
       - "443:443"
       - "80:80"
+#    volumes:
+#      - wp:/var/www/html/wordpress
     volumes:
       - wp:/var/www/html/wordpress
     networks:
       - inception
 
 
-#volumes:
-  #db:
-    #name: db
-    #driver: local
-    #driver_opts:
-      #type: none
-      #o: bind
-      #device: /Users/rchalmer/data/db
-  #wp:
-    #name: wp
-    #driver: local
-    #driver_opts:
-      #type: none
-      #o: bind
-      #device: /Users/rchalmer/data/wp
 volumes:
-  db: {}
-  wp: {}
+  db:
+    name: db
+    driver: local
+#    external: true
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/rchalmer/data/db
+#      device: /home/oem/Desktop/data/db
+  wp:
+    name: wp
+    driver: local
+#    external: true
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/rchalmer/data/wp
+#      device: /home/oem/Desktop/data/wp
+
+#volumes:
+#  db: {}
+#  wp: {}
+
 networks:
   inception:
     driver: bridge
