@@ -11,18 +11,16 @@ services:
         DB_USER: ${DB_USER}
         DB_PASSWORD: ${DB_PASSWORD}
         DB_NAME: ${DB_NAME}
-
+        MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     volumes:
       - db:/var/lib/mysql
-    ports:
-      - "5121:3306"
+    expose:
+      - "3306"
     networks:
       - inception
   wordpress:
     depends_on:
       - mariadb
-#    env_file:
-#      - .env
     build:
       context: ./requirements/wordpress
       dockerfile: Dockerfile
@@ -33,17 +31,10 @@ services:
         DB_NAME: ${DB_NAME}
     container_name: wordpress
     restart: unless-stopped
-    #    volumes:
-    #      - wp:/var/www/html/wordpress
     volumes:
       - wp:/var/www/html/wordpress
-    ports:
-      - "8000:8000"
-#    environment:
-#      DB_HOST: ${DB_HOST}
-#      DB_USER: ${DB_USER}
-#      DB_PASSWORD: ${DB_PASSWORD}
-#      DB_NAME: ${DB_NAME}
+    expose:
+      - "9000"
     networks:
       - inception
   nginx:
@@ -54,20 +45,15 @@ services:
     restart: unless-stopped
     ports:
       - "443:443"
-      - "80:80"
-#    volumes:
-#      - wp:/var/www/html/wordpress
     volumes:
       - wp:/var/www/html/wordpress
     networks:
       - inception
 
-
 volumes:
   db:
     name: db
     driver: local
-#    external: true
     driver_opts:
       type: none
       o: bind
@@ -76,16 +62,11 @@ volumes:
   wp:
     name: wp
     driver: local
-#    external: true
     driver_opts:
       type: none
       o: bind
       device: /home/rchalmer/data/wp
 #      device: /home/oem/Desktop/data/wp
-
-#volumes:
-#  db: {}
-#  wp: {}
 
 networks:
   inception:
